@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import NewsAPI from "newsapi";
 
 import CacheLoader from "./loader/CacheLoader.js";
-import Server from "./service.js";
+import Server from "./server.js";
 import DbLoader from "./loader/DbLoader.js";
 
 dotenv.config();
