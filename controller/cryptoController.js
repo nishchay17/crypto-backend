@@ -9,5 +9,6 @@ export async function allCrypto(req, res) {
     return cryptoValidator(curr);
   });
   redisClient.set(`allcrypto-${page}`, JSON.stringify(cleanCrypto));
+  redisClient.expire(`allcrypto-${page}`, 3600); // expires every 1 hour
   return res.json({ status: true, crypto: cleanCrypto });
 }
