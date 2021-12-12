@@ -37,7 +37,7 @@ export async function signin(req, res) {
       expiresIn: 864000, // 10 days
     });
     user.password = undefined;
-    return res.status(200).json({ status: true, user, token });
+    return res.status(200).json({ status: true, name: user.first_name, token });
   } catch (e) {
     throw new BaseError(500, "Can't send email " + e);
   }
@@ -45,7 +45,6 @@ export async function signin(req, res) {
 
 export async function signup(req, res) {
   const { password, first_name, last_name, email } = req.body;
-
   try {
     let user = await User.findOne({ email });
     if (user) {
@@ -65,13 +64,24 @@ export async function signup(req, res) {
       email,
     });
     await user.save();
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET, {
+      expiresIn: 864000, // 10 days
+    });
     return res.status(200).json({
       status: true,
       message: "Signup successful",
+      name: user.first_name,
+      token,
     });
   } catch (err) {
     console.log(err);
-    throw new BaseError(500, "Can't send email " + err);
+    throw new BaseError(500, err);
   }
 }
 
