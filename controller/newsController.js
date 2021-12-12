@@ -7,6 +7,5 @@ export async function topNews(req, res) {
     category: "business",
     language: "en",
   });
-  //redisClient.set(`allcrypto-${page}`, JSON.stringify(cleanCrypto));
   return res.json({ status: true, news: news.articles });
 }

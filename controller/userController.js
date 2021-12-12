@@ -1,22 +1,80 @@
-import userValidator from "../validator/userValidator.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
 import EmailService from "../service/emailService.js";
 import BaseError from "../error/BaseError.js";
 
-export async function allUsers(req, res) {
-  return res.json({
-    status: true,
-    message: [{ data: "list of all users" }],
-  });
+import User from "../model/User.js";
+
+export async function signin(req, res) {
+  const { email, password } = req.body;
+
+  try {
+    let user = await User.findOne({
+      email,
+    });
+
+    if (!user)
+      return res.status(200).json({
+        status: false,
+        message: "User Not Exist",
+      });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return res.status(200).json({
+        status: false,
+        message: "Invalid credentials",
+      });
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET, {
+      expiresIn: 864000, // 10 days
+    });
+    user.password = undefined;
+    return res.status(200).json({ status: true, user, token });
+  } catch (e) {
+    throw new BaseError(500, "Can't send email " + e);
+  }
 }
 
-export async function addUser(req, res) {
-  const user = userValidator(req.body);
+export async function signup(req, res) {
+  const { password, first_name, last_name, email } = req.body;
 
-  return res.json({
-    status: true,
-    message: user,
-  });
+  try {
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(200).json({
+        status: false,
+        message: "This email is already resister",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const encPassword = await bcrypt.hash(password, salt);
+
+    user = new User({
+      password: encPassword,
+      first_name,
+      last_name,
+      email,
+    });
+    await user.save();
+    return res.status(200).json({
+      status: true,
+      message: "Signup successful",
+    });
+  } catch (err) {
+    console.log(err);
+    throw new BaseError(500, "Can't send email " + err);
+  }
 }
+
 export async function sendEmail(req, res) {
   try {
     const emailData = {
