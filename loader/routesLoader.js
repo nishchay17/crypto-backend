@@ -2,6 +2,7 @@ import BaseError from "../error/BaseError.js";
 
 import cryptoRouter from "../router/cryptoRoute.js";
 import newsRouter from "../router/newsRoute.js";
+import sentimentAnalysisRouter from "../router/sentimentAnalysisRouter.js";
 import userRouter from "../router/userRouter.js";
 
 const RoutesLoader = async ({ app }) => {
@@ -12,6 +13,7 @@ const RoutesLoader = async ({ app }) => {
     throw new BaseError(400, "It's Error");
   });
   app.use("/user", userRouter);
+  app.use("/sa", sentimentAnalysisRouter);
   app.use("/crypto", cryptoRouter);
   app.use("/news", newsRouter);
   return app;
