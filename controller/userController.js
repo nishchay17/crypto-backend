@@ -33,6 +33,12 @@ export async function signin(req, res) {
       },
     };
 
+    await EmailService.sendEmail({
+      to: user.email,
+      subject: 'New sign-in',
+      html: '<p>New signin detected from your account.</p>'
+    });
+
     const token = jwt.sign(payload, process.env.SECRET, {
       expiresIn: 864000, // 10 days
     });
@@ -69,6 +75,12 @@ export async function signup(req, res) {
         id: user.id,
       },
     };
+
+    await EmailService.sendEmail({
+      to: user.email,
+      subject: 'Welcome to Crytpo market',
+      html: '<p>Hello, welcome to Crytpo market, find news and prices at one place.</p>'
+    });
 
     const token = jwt.sign(payload, process.env.SECRET, {
       expiresIn: 864000, // 10 days

@@ -5,20 +5,14 @@ class EmailService {
   static async sendEmail({
     to,
     subject,
-    text,
     html,
-    dynamic_template_data,
-    template_id,
   }) {
     sgMail.setApiKey(process.env.EMAIL_KEY);
     const msg = {
-      from: "nishchay13971@gmail.com",
+      from: "nishchayt9@gmail.com",
       to,
       subject,
-      text,
-      html,
-      dynamic_template_data,
-      template_id,
+      html
     };
     try {
       await sgMail.send(msg);
